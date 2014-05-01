@@ -54,4 +54,4 @@ def main():
         blah
         blah
         
-with will implicitly open and close the file.
+'with' will implicitly open and close the file.
