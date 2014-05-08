@@ -2,39 +2,69 @@
 #ArtGrichine@gmail.com
 
 import sys
+import queue
 
-class solver:
-    def __init__(self, board):
-        self._board = board
-        l = list(range(1,10))
-        self.u = set(l)
+#notes:
+# #priority que
+# s = []          #list acts just like a stack; has pop/push
+# q = queue.PriorityQueue()
+# 
+# for c in cells:
+#     if len(c.choices) == 1: #choices is a property
+#     #solve
+#     elif len(c.choices) > 1:
+#         t = (len(c.choices), c)
+#         q.put(t)
+# 
+# cellWeWantToGuessWith = q.get()[1]
+# stateOfBoard = str(board)      
+# for choice in cellWeWantToGuessWith.choices:
+#     t = (cellWeWantToGuessWith.index, choice, stateOfBoard)       #must have index property
+#     s.push(t)
+# 
+# guess = s.pop()
+# b.reinit(guess[2])
+# b.guess(guess[0],guess[1])
+
+def solve(board):
+    universe = list(range(1,10))
+    u = set(universe)
+    guess = intersection(u, board.rows, board.cols, board.subboard)
+    # print(guess)
     
-    def intersection(self):
-        return self.u - self._board.myrow - self._board.mycol - self._board.mysubboard
+def intersection(universe, row, col, sub):
+    return universe - row - col - sub
         
-
 class Board:
     def __init__(self, puzzle):
         self.cells = []
+        self._puzzle = puzzle
         for c in puzzle:
             self.cells.append(Cell(c))
         
-        rows = []
+        self.rows = []
         for r in range(0,81,9):
-            rows.append(MyRow(self.cells[r:r+9]))
+            self.rows.append(MyRow(self.cells[r:r+9]))
             
-        cols = []
+        self.cols = []
         for col in range(9):
             this_col = []
             for c in range(col,81,9):
                 this_col.append(self.cells[c])
-            cols.append(MyCol(this_col))
+            self.cols.append(MyCol(this_col))
             
-        subboard = []
+        self.subboard = []
         for x in range(0,81,27):
             for i in range(0,9,3):
                 for r in range(0,27,9):
-                    subboard.append(MySubBoard(self.cells[r+i+x:r+i+x+3]))        
+                    self.subboard.append(MySubBoard(self.cells[r+i+x:r+i+x+3]))   
+                    
+    def __str__(self):
+        return str(self._puzzle)
+            # return ''.join([str(c) for c in cells])
+            # m = map(lambda x:str(x), cells)           #same as above but this is map object
+#             return ''.join(list(m))
+             
 class Cell:
     def __init__(self, item):
         self._item = item
@@ -56,6 +86,9 @@ class Cell:
     def getMySubBoard(self):
         return self.mysubboard
     mysubboard = property(getMySubBoard, setMySubBoard)
+    
+    def __str__(self):
+        return str(self._item)
 
 class MyRow:
     def __init__(self, cells):
@@ -68,7 +101,6 @@ class MyCol:
         myCells = set(cells)
         for cell in myCells:
             cell.mycol = self
-        print(myCells)
 
 class MySubBoard:
     def __init__(self, cells):
@@ -85,6 +117,8 @@ def main():
         print(puzzle)
         print()
         newBoard = Board(puzzle)
+        print(newBoard)
+        solve(newBoard)
         # print()
         # print(solver.intersection(newBoard))
         #         
